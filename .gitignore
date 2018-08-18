@@ -1,0 +1,17 @@
+*.ini
+*.bat
+*.bak
+*.pyc
+*.csv
+*.sql
+*.zip
+*.log
+*.json
+*.sh
+dist/*
+build/*
+venv*/*
+bin/*
+dasladen.egg-info/*
+.idea
+.vscode
