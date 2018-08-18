@@ -1,9 +1,14 @@
 from setuptools import setup
 
+with open("README.rst", "r") as f:
+    long_description = f.read()
+
 setup(
     name='dasladen',
-    version='0.1.0',
+    version='0.1.1',
     description='Simple, tiny and ridiculus ETL made with Python',
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     license='MIT License',
     packages=['dasladen'],
     author='Vagner Pagotti',
