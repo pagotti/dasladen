@@ -20,8 +20,11 @@ There is others types of tasks to do things like:
 
 - Compact files into .zip file
 - Upload a file
-- Execute a Python scripts
-- Execute a SQL commands
+- Execute a Python script
+- Execute a SQL command
+
+The tasks are configured in a `.json` file that supports a sequence of tasks that will be executed 
+in configured order. Details of how to configure tasks will be in Wiki pages. 
  
 The basic steps to use DasLaden is:
 
@@ -38,9 +41,9 @@ the limitations on the driver package that you choose.
   - `log` Is the folder that Dasladen write task logs
   - `tasks` Is the folder that you can put tasks files. It is only a suggestion.
 - Create a `.json` file with your tasks in `tasks` folder.
-- Start DasLaden from project folder calling `python -m dasladen`. If you want to see log in console window,
-pass a `--verbose` as argument on call.
-- Copy then `.json` task file from `tasks` to the `capture` folder.
+- Start DasLaden from project folder calling `python -m dasladen`. 
+- If you want to see log in console window, pass a `--verbose` as argument on call.
+- Copy the `.json` tasks file from `tasks` to the `capture` folder.
 
 The watcher will open the tasks file and process it. To see result you can open `log` folder and search 
 for `watcher_DD_TT.log` where DD_TT is the date and time that log was generated. In `log` folder you
