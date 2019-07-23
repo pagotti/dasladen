@@ -19,7 +19,9 @@ setup(
         'schedule',
         'petl',
         'backports.tempfile',
-        'ftputil'
+        'ftputil',
+        'xlrd',
+        'xlwt-future'
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',
