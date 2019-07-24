@@ -20,6 +20,8 @@ Features:
 
 """
 
+import compat
+
 
 class CursorProxy(object):
     """Proxy for cursor that not has support a executemany with iterators"""
@@ -67,7 +69,10 @@ class OracleDriver(object):
 
     def output_type_handler(self, cursor, name, defaultType, size, precision, scale):
         if defaultType in (STRING, FIXED_CHAR):
-            return cursor.var(unicode, size, cursor.arraysize)
+            if compat.PY2:
+                return cursor.var(unicode, size, cursor.arraysize)
+            else:
+                return cursor.var(cx_Oracle.STRING, size, cursor.arraysize)
 
     def cursor(self, db):
         return CursorProxy(db.cursor())
@@ -153,3 +158,35 @@ class MySQLDriver(object):
     def cursor(self, db):
         return db.cursor()
 
+
+try:
+    import psycopg2 as postgres
+except ImportError:
+    pass
+
+
+class PostgreSQLDriver(object):
+    """Driver for PostgreSQL connections"""
+
+    def __init__(self, config):
+        self.config = config
+
+    def get_db(self):
+        conn = self.config
+        db_charset = conn.get("charset", "utf8")
+        host_address = conn.get("host", "localhost")
+        port = conn.get("port", 5432)
+        db = postgres.connect(host=host_address,
+							  port=port,
+                              user=conn["user"],
+                              password=conn["pass"],
+                              database=conn["database"],
+						      client_encoding=db_charset)
+
+        if "initializing" in conn:
+            for sql in conn["initializing"]:
+                db.cursor().execute(sql)
+        return db
+
+    def cursor(self, db):
+        return db.cursor()
