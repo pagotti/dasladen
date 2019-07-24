@@ -8,7 +8,7 @@ Features:
 """
 
 import time
-import compat
+from . import compat
 
 
 class FileHandler(object):

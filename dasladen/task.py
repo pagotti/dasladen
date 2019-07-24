@@ -28,10 +28,10 @@ import petl as etl
 import ftputil
 import zipfile
 import importlib
-import compat
+from . import compat
 
-from log import get_time_filename
-from taskdriver import *
+from .log import get_time_filename
+from .taskdriver import *
 
 class Connection(object):
     def __init__(self, config):

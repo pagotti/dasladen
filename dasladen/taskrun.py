@@ -14,9 +14,9 @@ Features:
 import json
 import os
 import time
-import compat
+from . import compat
 
-from task import TaskFactory, DriverFactory
+from .task import TaskFactory, DriverFactory
 
 
 class Runner(object):

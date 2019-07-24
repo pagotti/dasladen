@@ -20,7 +20,7 @@ Features:
 
 """
 
-import compat
+from . import compat
 
 
 class CursorProxy(object):

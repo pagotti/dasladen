@@ -64,5 +64,6 @@ Data drivers via PyPi packages:
 - MySQL via [PyMySQL](https://pypi.org/project/PyMySQL/) package. v >= 0.7.5
 - MS SQL Server via [pyodbc](https://pypi.org/project/pyodbc/) package. v >= 3.0.10
 - Oracle via [cx_Oracle](https://pypi.org/project/cx_Oracle/) package. v >= 5.2.1
+- PostgreSQL via [psycopg2](https://pypi.org/project/psycopg2/) package. v >= 2.8.3
 
-*The current version works only with Python 2.
+The current version works with Python 2 and 3.

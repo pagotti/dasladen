@@ -10,8 +10,8 @@ from argparse import ArgumentParser
 from schedule import run_pending, every
 from time import sleep
 from shutil import copy
-from processor import Watcher
-from log import add_log_handler, ConsoleHandler
+from .processor import Watcher
+from .log import add_log_handler, ConsoleHandler
 
 
 def main():

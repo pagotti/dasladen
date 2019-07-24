@@ -23,8 +23,8 @@ import schedule
 
 from shutil import copy2
 from backports import tempfile
-from log import Logger, get_time_filename
-from taskrun import *
+from .log import Logger, get_time_filename
+from .taskrun import *
 
 
 class SchedulerJob(object):
