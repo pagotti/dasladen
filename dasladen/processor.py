@@ -41,7 +41,7 @@ class SchedulerJob(object):
             try:
                 log.write("Executing Scheduled Tasks: {}".format(self.filename))
                 self.manager.run(log)
-            except StandardError:
+            except Exception:
                 log.write("Error: {}".format(traceback.format_exc()))
             finally:
                 log.write("Finished: {0}, elapsed: {1:.2f}s".format(self.filename, (time.time() - start)))
@@ -218,7 +218,7 @@ class CopyProcessor(object):
                 copy2(source_file, target_file)
             else:
                 os.rename(source_file, target_file)
-        except StandardError:
+        except Exception:
             self.log.write("Error: {}".format(traceback.format_exc()))
         finally:
             self.log.write("Finished: {0}, elapsed: {1:.2f}s".format(filename, (time.time() - start)))
@@ -249,7 +249,7 @@ class ExtractProcessor(object):
             z.close()
             self.log.write("Removing ZIP: {}".format(filename))
             os.remove(source_file)
-        except StandardError:
+        except Exception:
             self.log.write("Error: {}".format(traceback.format_exc()))
         finally:
             self.log.write("Finished: {0}, elapsed: {1:.2f}s".format(filename, (time.time() - start)))
@@ -283,13 +283,13 @@ class ZipFilesProcessor(object):
                         files = [f for f in os.listdir(temp_folder)]
                         _process(CopyProcessor(files, self.log), temp_folder)
                         _process(TaskProcessor(files, self.log), temp_folder)
-                    except StandardError:
+                    except Exception:
                         self.log.write("Error: {}".format(traceback.format_exc()))
                     finally:
                         self.log.write("Removing Temporary Dir: {}".format(temp_folder))
         except IOError:
             self.log.write("IO Error: {}".format(traceback.format_exc()))
-        except StandardError:
+        except Exception:
             self.log.write("Error: {}".format(traceback.format_exc()))
 
 
