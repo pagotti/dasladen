@@ -7,7 +7,7 @@ Compatibility functions for run Python 2 and 3 versions
 
 import sys
 import importlib
-
+import io
 
 PY2 = sys.version_info.major == 2
 PY3 = sys.version_info.major == 3
@@ -31,7 +31,7 @@ def translate_unicode(str_input):
     else:
         return str_input
 
-def open(file, mode='r', buffering=-1):
-    if PY3 and buffering == 0 and (not 'b' in mode):
+def open(file, mode='r', buffering=-1, encoding=None):
+    if buffering == 0 and (not 'b' in mode):
         buffering = 2
-    return open(file, mode, buffering)
+    return io.open(file, mode, buffering, encoding)
