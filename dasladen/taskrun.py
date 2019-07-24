@@ -14,6 +14,7 @@ Features:
 import json
 import os
 import time
+import compat
 
 from task import TaskFactory, DriverFactory
 
@@ -23,7 +24,7 @@ class Runner(object):
 
     def __init__(self, task):
         if os.path.isfile(task):
-            with open(task, 'r', encoding='utf-8') as f:
+            with compat.open(task, 'r', encoding='utf-8') as f:
                 self._config = json.load(f)
         else:
             raise ValueError("Task file not found!")
@@ -31,7 +32,7 @@ class Runner(object):
     @staticmethod
     def is_task(filename):
         if filename.endswith(".json") and os.path.isfile(filename):
-            with open(filename, 'r', encoding='utf-8') as f:
+            with compat.open(filename, 'r', encoding='utf-8') as f:
                 config = json.load(f)
                 # TODO: maybe a property id? jsonschema?
                 return "tasks" in config
