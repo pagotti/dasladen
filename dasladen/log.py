@@ -8,6 +8,7 @@ Features:
 """
 
 import time
+import compat
 
 
 class FileHandler(object):
@@ -15,7 +16,7 @@ class FileHandler(object):
         self.file = None
 
     def open(self, key):
-        self.file = open('log/{}.log'.format(key), 'a', 0)
+        self.file = compat.open('log/{}.log'.format(key), 'a', 0)
 
     def write(self, data):
         self.file.write(u"{} {}\n".format(get_time(), data))

@@ -3,7 +3,9 @@
 Task Module
 
 External Dependencies:
-- petl : (c) 2012 Alistair Miles - MIT License (https://pypi.python.org/pypi/petl/1.1.0)
+- petl : (c) 2012 Alistair Miles - MIT License (https://pypi.python.org/pypi/petl/)
+- xlrd : (c) 2005-2018 Stephen John Machin, Lingfo Pty Ltd. (https://pypi.org/project/xlrd/)
+- ftputil: (c) 2017 Stefan Schwarzer and contributors (https://pypi.org/project/ftputil/)
 
 Features:
 - CSV -> DB task
@@ -26,11 +28,10 @@ import petl as etl
 import ftputil
 import zipfile
 import importlib
+import compat
 
-from string import maketrans
 from log import get_time_filename
 from taskdriver import *
-
 
 class Connection(object):
     def __init__(self, config):
@@ -57,9 +58,9 @@ class DriverFactory(object):
         if "environment" in item:
             for env in item["environment"]:
                 key = env["key"]
-                key = key.encode('utf-8') if isinstance(key, unicode) else key
+                key = compat.translate_unicode(key)
                 value = env["value"]
-                value = value.encode('utf-8') if isinstance(value, unicode) else value
+                value = compat.translate_unicode(value)
                 os.environ[key] = value
         # select driver 
         if item["driver"] == "MySQL":
@@ -119,7 +120,7 @@ class TransformSubTask(object):
             module_name = transform["module"]
             package = transform.get("package", None)
             module_obj = importlib.import_module(module_name, package)
-            reload(module_obj)
+            compat.reload_module(module_obj)
             fields = transform.get("fields", [])
             args = transform.get("args", {})
             if "class" in transform:
@@ -177,13 +178,13 @@ class DbCsvTask(BaseTask):
             record_set = transform.get_result(record_set)
 
             fld = task["target"].get("folder", "output")
-            fld = fld.encode('latin1') if isinstance(fld, unicode) else fld
+            fld = compat.translate_unicode(fld)
             target = task["target"]["file"]
-            target = target.encode('latin1') if isinstance(target, unicode) else target
+            target = compat.translate_unicode(target)
             out = "{}/{}".format(fld, target)
 
             separator = task["target"].get("delimiter", ";")
-            separator = separator.encode('utf-8') if isinstance(separator, unicode) else separator
+            separator = compat.translate_unicode(separator)
             enc = task["target"].get("encoding", "utf-8")
 
             task_log = "log/db-csv_{}_{}.log".format(task["name"], get_time_filename())
@@ -199,16 +200,16 @@ class CsvDbTask(BaseTask):
 
     def run(self, driver, task, log):
         source_folder = task["source"].get("folder", "input")
-        source_folder = source_folder.encode('latin1') if isinstance(source_folder, unicode) else source_folder
+        source_folder = compat.translate_unicode(source_folder)
         source = task["source"]["file"]
-        source = source.encode('latin1') if isinstance(source, unicode) else source
+        source = compat.translate_unicode(source)
         inp = "{}/{}".format(source_folder, source)
 
         separator = task["source"].get("delimiter", ";")
-        separator = separator.encode('utf-8') if isinstance(separator, unicode) else separator
+        separator = compat.translate_unicode(separator)
 
         enc = task["source"].get("encoding", "utf-8")
-        enc = enc.encode('utf-8') if isinstance(enc, unicode) else enc
+        enc = compat.translate_unicode(enc)
 
         record_set = etl.fromcsv(inp, encoding=enc, delimiter=separator)
 
@@ -222,10 +223,10 @@ class CsvDbTask(BaseTask):
             db = output_driver.get_db()
 
             table = task["target"]["table"]
-            table = table.encode('utf-8') if isinstance(table, unicode) else table
+            table = compat.translate_unicode(table)
             if "schema" in task["target"]:
                 schema_name = task["target"]["schema"]
-                schema_name = schema_name.encode('utf-8') if isinstance(schema_name, unicode) else schema_name
+                schema_name = compat.translate_unicode(schema_name)
             else:
                 schema_name = None
 
@@ -256,10 +257,10 @@ class DbDbTask(BaseTask):
             out_db = output_driver.get_db()
 
             table = task["target"]["table"]
-            table = table.encode('utf-8') if isinstance(table, unicode) else table
+            table = compat.translate_unicode(table)
             if "schema" in task["target"]:
                 schema_name = task["target"]["schema"]
-                schema_name = schema_name.encode('utf-8') if isinstance(schema_name, unicode) else schema_name
+                schema_name = compat.translate_unicode(schema_name)
             else:
                 schema_name = None
 
@@ -278,13 +279,13 @@ class CsvCsvTask(BaseTask):
 
     def run(self, driver, task, log):
         inp = task["source"]["file"]
-        inp = inp.encode('latin1') if isinstance(inp, unicode) else inp
+        inp = compat.translate_unicode(inp)
         inp = "input/{}".format(inp)
         separator = task["source"].get("delimiter", ";")
-        separator = separator.encode('utf-8') if isinstance(separator, unicode) else separator
+        separator = compat.translate_unicode(separator)
 
         enc = task["source"].get("encoding", "utf-8")
-        enc = enc.encode('utf-8') if isinstance(enc, unicode) else enc
+        enc = compat.translate_unicode(enc)
         
         record_set = etl.fromcsv(inp, encoding=enc, delimiter=separator)
         if not etl.data(record_set).any():
@@ -294,10 +295,10 @@ class CsvCsvTask(BaseTask):
             record_set = transform.get_result(record_set)
 
             out = task["target"]["file"]
-            out = out.encode('latin1') if isinstance(out, unicode) else out
+            out = compat.translate_unicode(out)
             out = "output/{}".format(out)
             separator = task["target"].get("delimiter", ";")
-            separator = separator.encode('utf-8') if isinstance(separator, unicode) else separator
+            separator = compat.translate_unicode(separator)
             enc = task["target"].get("encoding", "utf-8")
 
             task_log = "log/csv-csv_{}_{}.log".format(task["name"], get_time_filename())
@@ -312,7 +313,7 @@ class XlsCsvTask(BaseTask):
 
     def run(self, driver, task, log):
         inp = task["source"]["file"]
-        inp = inp.encode('latin1') if isinstance(inp, unicode) else inp
+        inp = compat.translate_unicode(inp)
         inp = "input/{}".format(inp)
         sheet = task["source"].get("sheet", None)
         use_view = task["source"].get("use_view", True)
@@ -325,10 +326,10 @@ class XlsCsvTask(BaseTask):
             record_set = transform.get_result(record_set)
 
             out = task["target"]["file"]
-            out = out.encode('latin1') if isinstance(out, unicode) else out
+            out = compat.translate_unicode(out)
             out = "output/{}".format(out)
             separator = task["target"].get("delimiter", ";")
-            separator = separator.encode('utf-8') if isinstance(separator, unicode) else separator
+            separator = compat.translate_unicode(separator)
             enc = task["target"].get("encoding", "utf-8")
 
             task_log = "log/xls-csv_{}_{}.log".format(task["name"], get_time_filename())
@@ -343,7 +344,7 @@ class XmlCsvTask(BaseTask):
 
     def run(self, driver, task, log):
         inp = task["source"]["file"]
-        inp = inp.encode('latin1') if isinstance(inp, unicode) else inp
+        inp = compat.translate_unicode(inp)
         inp = "input/{}".format(inp)
         row_match = task["source"].get("row", None)
         value_match = task["source"].get("value", None)
@@ -367,10 +368,10 @@ class XmlCsvTask(BaseTask):
             record_set = transform.get_result(record_set)
 
             out = task["target"]["file"]
-            out = out.encode('latin1') if isinstance(out, unicode) else out
+            out = compat.translate_unicode(out)
             out = "output/{}".format(out)
             separator = task["target"].get("delimiter", ";")
-            separator = separator.encode('utf-8') if isinstance(separator, unicode) else separator
+            separator = compat.translate_unicode(separator)
             enc = task["target"].get("encoding", "utf-8")
 
             task_log = "log/xml-csv_{}_{}.log".format(task["name"], get_time_filename())
@@ -385,7 +386,7 @@ class XmlDbTask(BaseTask):
 
     def run(self, driver, task, log):
         inp = task["source"]["file"]
-        inp = inp.encode('latin1') if isinstance(inp, unicode) else inp
+        inp = compat.translate_unicode(inp)
         inp = "input/{}".format(inp)
         row_match = task["source"].get("row", None)
         value_match = task["source"].get("value", None)
@@ -412,10 +413,10 @@ class XmlDbTask(BaseTask):
             db = output_driver.get_db()
 
             table = task["target"]["table"]
-            table = table.encode('latin1') if isinstance(table, unicode) else table
+            table = compat.translate_unicode(table)
             if "schema" in task["target"]:
                 schema_name = task["target"]["schema"]
-                schema_name = schema_name.encode('latin1') if isinstance(schema_name, unicode) else schema_name
+                schema_name = compat.translate_unicode(schema_name)
             else:
                 schema_name = None
 
@@ -434,9 +435,9 @@ class FtpUploadTask(BaseTask):
 
     def run(self, driver, task, log):
         source = task["source"]["file"]
-        source = source.encode('latin1') if isinstance(source, unicode) else source
+        source = compat.translate_unicode(source)
         source_path = task["source"].get("path", "output")
-        source_path = source_path.encode('latin1') if isinstance(source_path, unicode) else source_path
+        source_path = compat.translate_unicode(source_path)
         source_path = "{}/{}".format(source_path, source)
         target = task["target"].get("file", source)
         target_path = "{}/{}".format(task["target"]["path"], target)
@@ -452,12 +453,12 @@ class ZipTask(BaseTask):
 
     @staticmethod
     def _encode_cp437(s):
-        return s.encode('cp437', errors='replace').translate(maketrans('?', '_'))
+        return s.encode('cp437', errors='replace').translate(compat.maketrans('?', '_'))
 
     def run(self, driver, task, log):
         source = task["source"]["files"]
         source_path = task["source"].get("path", "output")
-        source_path = source_path.encode('latin1') if isinstance(source_path, unicode) else source_path
+        source_path = compat.translate_unicode(source_path)
         remove_after = task["source"].get("remove_after", [])
         if "target" in task:
             target = task["target"]["file"] if "file" in task["target"] else "{}.zip".format(source[0])
@@ -465,14 +466,14 @@ class ZipTask(BaseTask):
         else:
             target = "{}.zip".format(source[0])
             target_path = source_path
-        target = target.encode('latin1') if isinstance(target, unicode) else target
+        target = compat.translate_unicode(target)
         target = "{}.zip".format(target) if not target.endswith(".zip") else target
-        target_path = target_path.encode('latin1') if isinstance(target_path, unicode) else target_path
+        target_path = compat.translate_unicode(target_path)
 
         target_file = "{}/{}".format(target_path, target)
         with zipfile.ZipFile(target_file, 'w', zipfile.ZIP_DEFLATED) as z:
             for file_name in source:
-                file_name = file_name.encode('latin1') if isinstance(file_name, unicode) else file_name
+                file_name = compat.translate_unicode(file_name)
                 z.write("{}/{}".format(target_path, file_name), ZipTask._encode_cp437(file_name))
 
         for file_name in remove_after:
@@ -491,7 +492,7 @@ class PyExecTask(BaseTask):
             sys.argv[1:] = []
 
         module_obj = importlib.import_module(module_name, package)
-        reload(module_obj)
+        compat.reload_module(module_obj)
         # TODO: better no call main
         module_obj.main()
 
@@ -521,7 +522,7 @@ class CustomTask(BaseTask):
         module_name = task["module"]
         package = task.get("package", None)
         module_obj = importlib.import_module(module_name, package)
-        reload(module_obj)
+        compat.reload_module(module_obj)
         task_class = getattr(module_obj, task["class"])
         task_instance = task_class()
         task_instance.run(driver, task, log)
