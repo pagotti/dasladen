@@ -69,6 +69,8 @@ class DriverFactory(object):
             return OracleDriver(item)
         elif item["driver"] == "MSSQL":
             return MSSQLDriver(item)
+        elif item["driver"] == "PostgreSQL":
+            return PostgreSQLDriver(item)
         
         raise NotImplementedError    
 
