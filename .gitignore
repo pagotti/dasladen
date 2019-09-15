@@ -15,5 +15,3 @@ bin/*
 dasladen.egg-info/*
 .idea
 .vscode
-p3env/*
-p2env/*
