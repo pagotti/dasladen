@@ -14,8 +14,8 @@ Features:
 import json
 import os
 import time
-from . import compat
 
+from . import compat
 from .task import TaskFactory, DriverFactory
 
 

@@ -21,6 +21,22 @@ Features:
 """
 
 from . import compat
+try:
+    import cx_Oracle as oracle
+except ImportError:
+    pass
+try:
+    import pyodbc as odbc
+except ImportError:
+    pass
+try:
+    import pymysql as mysql
+except ImportError:
+    pass
+try:
+    import psycopg2 as postgres
+except ImportError:
+    pass
 
 
 class CursorProxy(object):
@@ -37,12 +53,6 @@ class CursorProxy(object):
 
     def __getattr__(self, item):
         return getattr(self._cursor, item)
-
-
-try:
-    import cx_Oracle as oracle
-except ImportError:
-    pass
 
 
 class OracleDriver(object):
@@ -76,12 +86,6 @@ class OracleDriver(object):
 
     def cursor(self, db):
         return CursorProxy(db.cursor())
-
-
-try:
-    import pyodbc as odbc
-except ImportError:
-    pass
 
 
 class MSSQLDriver(object):
@@ -122,12 +126,6 @@ class MSSQLDriver(object):
         return db.cursor()
 
 
-try:
-    import pymysql as mysql
-except ImportError:
-    pass
-
-
 class MySQLDriver(object):
     """Driver for MySQL connections"""
 
@@ -157,12 +155,6 @@ class MySQLDriver(object):
 
     def cursor(self, db):
         return db.cursor()
-
-
-try:
-    import psycopg2 as postgres
-except ImportError:
-    pass
 
 
 class PostgreSQLDriver(object):

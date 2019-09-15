@@ -6,8 +6,10 @@ Compatibility functions for run Python 2 and 3 versions
 """
 
 import sys
-import importlib
 import io
+
+import importlib
+
 
 PY2 = sys.version_info.major == 2
 PY3 = sys.version_info.major == 3

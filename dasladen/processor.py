@@ -19,10 +19,11 @@ Features:
 
 import traceback
 import zipfile
-import schedule
 
+import schedule
 from shutil import copy2
 from backports import tempfile
+
 from .log import Logger, get_time_filename
 from .taskrun import *
 
