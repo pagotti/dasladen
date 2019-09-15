@@ -17,21 +17,26 @@ Features:
 - XML -> CSV task
 - FTP Upload task
 - ZIP task
+- UNZIP task
 - Python Module task
 - SQL task
+- Download task
 
 """
 
 import os
 import sys
+
 import petl as etl
 import ftputil
 import zipfile
 import importlib
-from . import compat
+from requests import get
 
+from . import compat
 from .log import get_time_filename
 from .taskdriver import *
+
 
 class Connection(object):
     def __init__(self, config):
@@ -482,6 +487,26 @@ class ZipTask(BaseTask):
             os.remove("{}/{}".format(target_path, file_name))
 
 
+class UnzipTask(BaseTask):
+    def run(self, driver, task, log):
+        source = task["source"]["file"]
+        source_path = task["source"].get("path", "input")
+        source_path = compat.translate_unicode(source_path)
+        remove_after = task["source"].get("remove_after", False)
+        if "target" in task:
+            target_path = task["target"].get("path", source_path)
+        else:
+            target_path = source_path
+        target_path = compat.translate_unicode(target_path)
+        
+        source_file = "{}/{}".format(source_path, source)
+        z = zipfile.ZipFile(source_file)
+        z.extractall(target_path)
+        z.close()
+        if remove_after:
+            os.remove(source)
+
+
 class PyExecTask(BaseTask):
 
     def run(self, driver, task, log):
@@ -530,6 +555,25 @@ class CustomTask(BaseTask):
         task_instance.run(driver, task, log)
 
 
+class DownloadTask(BaseTask):
+
+    def run(self, driver, task, log):
+        source = task["source"]["url"]
+        source = compat.translate_unicode(source)
+        payload = task["source"].get("params", {})
+        headers = task["source"].get("headers", {})
+        target = task["target"]["file"] 
+        target = compat.translate_unicode(target)
+        target_path = task["target"].get("path", "output")
+        target_path = compat.translate_unicode(target_path)
+        target_file = "{}/{}".format(target_path, target)
+        with open(target_file, "wb") as file:
+            response = get(source, params=payload, headers=headers)
+            response.raise_for_status()
+            file.write(response.content)
+            log.write("Download complete. {} bytes saved".format(len(response.content)))
+
+
 class TaskFactory(object):
     _tasks = {
         "db-csv": DbCsvTask,
@@ -541,10 +585,12 @@ class TaskFactory(object):
         "xml-db": XmlDbTask,
         "ftp-upload": FtpUploadTask,
         "zip": ZipTask,
+        "unzip": UnzipTask,
         "py-exec": PyExecTask,
         "sql-exec": SqlExecTask,
         "nop": NopTask,
-        "custom": CustomTask
+        "custom": CustomTask,
+        "download": DownloadTask
     }
 
     def get_task(self, task_type):

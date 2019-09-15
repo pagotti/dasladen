@@ -5,7 +5,7 @@ with open("README.md", "r") as f:
 
 setup(
     name='dasladen',
-    version='0.1.8',
+    version='0.1.9',
     description='Simple, tiny and ridiculus ETL made with Python',
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -21,7 +21,8 @@ setup(
         'backports.tempfile',
         'ftputil',
         'xlrd',
-        'xlwt-future'
+        'xlwt-future',
+        'requests'
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',

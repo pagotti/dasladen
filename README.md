@@ -19,7 +19,9 @@ transformations in a Python module or class to be called by Dasladen during load
 There is others types of tasks to do things like:
 
 - Compact files into .zip file
+- Extract files from .zip file 
 - Upload a file
+- Download a file
 - Execute a Python script
 - Execute a SQL command
 
