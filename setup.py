@@ -5,7 +5,7 @@ with open("README.md", "r") as f:
 
 setup(
     name='dasladen',
-    version='0.1.9',
+    version='0.2.0',
     description='Simple, tiny and ridiculus ETL made with Python',
     long_description=long_description,
     long_description_content_type="text/markdown",

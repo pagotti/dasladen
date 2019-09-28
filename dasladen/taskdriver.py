@@ -13,10 +13,14 @@ MySQL Driver External Dependencies:
 MSSQL Driver (via ODBC) External Dependencies:
 - pyodbc: (c) Michael Kleehammer - MIT License (https://github.com/mkleehammer/pyodbc)
 
+Postgres Driver External Dependencies:
+- psycopg2: (c) Federico Di Gregorio, Daniele Varrazzo, Jason Erickson - LGPL License (https://github.com/psycopg/psycopg2)
+
 Features:
 - Connection to MS SQL
 - Connection to MySQL
 - Connection to Oracle
+- Connection to PostgreSQL
 
 """
 
@@ -35,6 +39,7 @@ except ImportError:
     pass
 try:
     import psycopg2 as postgres
+    import psycopg2.extras as postres_extras
 except ImportError:
     pass
 
@@ -157,6 +162,19 @@ class MySQLDriver(object):
         return db.cursor()
 
 
+class PostgreBatchCursor():
+    """Proxy that bypass executemany and run execute_batch on psycopg2 """
+
+    def __init__(self, cursor):
+        self._cursor = cursor
+
+    def executemany(self, statement, parameters, **kwargs):
+        return postres_extras.execute_batch(self._cursor, statement, parameters, **kwargs)
+
+    def __getattr__(self, item):
+        return getattr(self._cursor, item)    
+
+
 class PostgreSQLDriver(object):
     """Driver for PostgreSQL connections"""
 
@@ -181,4 +199,4 @@ class PostgreSQLDriver(object):
         return db
 
     def cursor(self, db):
-        return db.cursor()
+        return PostgreBatchCursor(db.cursor())
