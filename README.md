@@ -1,5 +1,10 @@
+# DasLaden
+
+![PyPI](https://img.shields.io/pypi/v/dasladen)
+
+## Overview
+
 DasLaden is a simple, tiny and ridiculus ETL made with Python
-=============================================================
 
 Dasladen is a general purpose Python package to make an automate ETL (Extracting, Transforming and
 Loading data) through the configuration of one or more .json files that represents tasks. 
@@ -28,9 +33,18 @@ There is others types of tasks to do things like:
 The tasks are configured in a `.json` file that supports a sequence of tasks that will be executed 
 in configured order. Details of how to configure tasks will be in Wiki pages. 
  
-The basic steps to use DasLaden is:
+## Install
 
-- Install dasladen package via `pip install dasladen` in your environment or in virtualenv.
+Use the package manager [pip](https://pip.pypa.io/en/stable/).
+
+```bash
+pip install dasladen
+```
+The current version works with Python 2 and 3.
+
+## Usage
+
+- Install dasladen package in your environment or in a virtualenv.
 - Install database driver package if you want to execute database tasks. Dasladen is prepared to run with the
 following drivers: MySQL via `PyMySQL`, MS SQL Server via `pyodbc` and Oracle via `cx_Oracle`. Please see
 the limitations on the driver package that you choose.
@@ -62,10 +76,10 @@ files (other than `.json` files) to input folder and execute the `.json` file.
 In the `.json` file you can configure a scheduler to run the tasks. With it you can delay a execution or 
 configure its recurrence. 
 
-Data drivers via PyPi packages: 
+## Data drivers via PyPi packages
+
 - MySQL via [PyMySQL](https://pypi.org/project/PyMySQL/) package. v >= 0.7.5
 - MS SQL Server via [pyodbc](https://pypi.org/project/pyodbc/) package. v >= 3.0.10
 - Oracle via [cx_Oracle](https://pypi.org/project/cx_Oracle/) package. v >= 5.2.1
 - PostgreSQL via [psycopg2](https://pypi.org/project/psycopg2/) package. v >= 2.8.3
 
-The current version works with Python 2 and 3.
