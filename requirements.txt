@@ -1,4 +1,4 @@
-petl==1.2.0
+petl==1.7.4
 schedule==0.6.0
 backports.tempfile==1.0
 ftputil==3.4
