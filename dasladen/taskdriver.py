@@ -24,6 +24,8 @@ Features:
 
 """
 
+import os
+
 from . import compat
 try:
     import cx_Oracle as oracle
@@ -42,6 +44,14 @@ try:
     import psycopg2.extras as postres_extras
 except ImportError:
     pass
+
+
+def get_env(value):
+    """Return the [VAR] environment variable if starts with $env.[VAR]"""
+    if len(value) > 5 and value.startswith("$env."):
+        return os.environ[value[5:]]
+    else:
+        return value
 
 
 class CursorProxy(object):
@@ -71,7 +81,7 @@ class OracleDriver(object):
         host_address = conn.get("host", "localhost")
         port = conn.get("port", "1521")
 
-        str_conn = "{}/{}@{}:{}/{}".format(conn["user"], conn["pass"],
+        str_conn = "{}/{}@{}:{}/{}".format(get_env(conn["user"]), get_env(conn["pass"]),
                                            host_address, port, conn["service"])
         db = oracle.connect(str_conn)
         db.outputtypehandler = self.output_type_handler
@@ -116,8 +126,8 @@ class MSSQLDriver(object):
                         "PORT={};DATABASE={};UID={};PWD={};{}").format(
                 host_address, port,
                 conn["database"],
-                conn["user"],
-                conn["pass"],
+                get_env(conn["user"]),
+                get_env(conn["pass"]),
                 db_charset)
 
         db = odbc.connect(str_conn)
@@ -145,8 +155,8 @@ class MySQLDriver(object):
 
         db = mysql.connect(host=host_address,
                            port=port,
-                           user=conn["user"],
-                           password=conn["pass"],
+                           user=get_env(conn["user"]),
+                           password=get_env(conn["pass"]),
                            database=conn["database"],
                            charset=db_charset,
                            local_infile=1)
@@ -188,8 +198,8 @@ class PostgreSQLDriver(object):
         port = conn.get("port", 5432)
         db = postgres.connect(host=host_address,
 							  port=port,
-                              user=conn["user"],
-                              password=conn["pass"],
+                              user=get_env(conn["user"]),
+                              password=get_env(conn["pass"]),
                               database=conn["database"],
 						      client_encoding=db_charset)
 
