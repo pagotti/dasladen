@@ -8,6 +8,7 @@ Features:
 """
 
 import time
+import logging
 
 from . import compat
 
@@ -38,10 +39,22 @@ class ConsoleHandler(object):
         pass
 
 
+class DebugHandler(object):
+    def open(self, key):
+        pass
+
+    # noinspection PyMethodMayBeStatic
+    def write(self, data):
+        logging.info(data)
+
+    def close(self):
+        pass
+
+
 class LogManager(object):
     def __init__(self):
         self.log_manager_instance = dict()
-        self.handlers = [FileHandler()]
+        self.handlers = []
 
     def add(self, key):
         self.log_manager_instance[key] = self.handlers

@@ -12,6 +12,7 @@ dist/*
 build/*
 venv*/*
 bin/*
+test/*
 dasladen.egg-info/*
 .idea
 .vscode

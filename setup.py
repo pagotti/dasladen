@@ -5,12 +5,17 @@ with open("README.md", "r") as f:
 
 setup(
     name='dasladen',
-    version='0.2.0',
+    version='0.2.1',
     description='Simple, tiny and ridiculus ETL made with Python',
     long_description=long_description,
     long_description_content_type="text/markdown",
     license='MIT License',
     packages=find_packages(),
+    entry_points = {
+        'console_scripts': [
+            'dasladen = dasladen.base:main'
+        ]
+    },
     author='Vagner Pagotti',
     author_email='pagotti@gmail.com',
     url='https://github.com/pagotti/dasladen',

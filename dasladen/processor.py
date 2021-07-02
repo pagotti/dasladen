@@ -19,6 +19,7 @@ Features:
 
 import traceback
 import zipfile
+import logging
 
 import schedule
 from shutil import copy2
@@ -300,19 +301,31 @@ class Watcher(object):
     def __init__(self, path):
         self.path = path
         self.before = dict([(f, None) for f in os.listdir(path)])
-        print(u"Watcher started on '{}'.\n".format(path))
+        logging.info(u"Watcher started on '{}'".format(path))
 
     def _process(self, processor):
         for f in processor.selection():
             processor.execute(self.path, f)
 
-    def process_file_list(self, file_list):
+    def _process_list(self, file_list, file_type_log):
         """first unzip, then copy and finally execute tasks"""
-        with Logger('watcher_{}'.format(get_time_filename())) as log:
-            log.write("Starting a capture...")
+        with Logger('{}_{}'.format(file_type_log, get_time_filename())) as log:
+            log.write("Starting...")
             self._process(ZipFilesProcessor(file_list, log))
             self._process(CopyProcessor(file_list, log))
             self._process(TaskProcessor(file_list, log))
+
+    def _process_file_list(self, file_list):
+        self._process_list(file_list, "watcher")
+
+    def process_file(self, path):
+        path_name = os.path.split(path)
+        try:
+            target = '{}/{}'.format(self.path, path_name[1])
+            copy2(path, target)
+            self._process_list([path_name[1]], "task")
+        except Exception:
+            logging.error("Error: {}".format(traceback.format_exc()))
 
     def check(self):
         after = dict([(f, None) for f in os.listdir(self.path)])
@@ -320,7 +333,7 @@ class Watcher(object):
 
         # on add, process files on that order
         if added:
-            self.process_file_list(added)
+            self._process_file_list(added)
 
         self.before = after
 
